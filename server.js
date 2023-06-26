@@ -1,49 +1,62 @@
+const mongoose = require("mongoose");
 const express = require("express");
+const Tools = require("./app/controllers/Tools.js");
+const app = express();
 const bodyParser = require("body-parser");
 
-const app = express();
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(bodyParser.json());
+const cors = require("cors");
+const auth = require("./app/middleware/auth.js");
+const UserRoute = require("./app/routes/User");
+const ToolsRoute = require("./app/routes/Tools");
 
 const dbConfig = require("./config/database.config.js");
-const mongoose = require("mongoose");
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cors());
 
 mongoose.Promise = global.Promise;
-
 mongoose
   .connect(dbConfig.url, {
     useNewUrlParser: true,
   })
   .then(() => {
-    console.log("Databse Connected Successfully!!");
+    console.log("Mongo Db Connection Success!!");
+    // Tools.logger.info("Express.js listening on port 3000.");
   })
   .catch((err) => {
     console.log("Could not connect to the database", err);
+    // Tools.logger.error("Whooops! This broke with error: ", err);
     process.exit();
   });
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello Crud Node Express" });
-});
-
-app.listen(3000, () => {
+app.listen(3000, (req, res) => {
   console.log("Server is listening on port 3000");
 });
-
-const UserRoute = require("./app/routes/User");
-const ToolsRoute = require("./app/routes/Tools");
 app.use("/user", UserRoute);
 app.use("/tools", ToolsRoute);
 
-// app.get("/download", function (req, res) {
-//   const file = `${__dirname}/storage/files/sampledownload.mp3`;
-//   res.download(file); // Set disposition and send it.
-// });
-
-const auth = require("./middleware/auth");
-
-app.post("/welcome", auth, (req, res) => {
-  res.status(200).send("Welcome 🙌 ");
+app.post("/test", bodyParser.json(), async (req, res) => {
+  console.log(req);
+  res.json({ message: "Testing for body parser" });
 });
+
+app.get("/welcome", auth, (req, res) => {
+  res.json({ message: "Testing for authentication" });
+});
+
+require("./app/routes/tutorial.routes")(app);
+
+// const db = require("./app/model");
+// db.sequelize
+//   .sync()
+//   .then(() => {
+//     console.log("Synced db.");
+//   })
+//   .catch((err) => {
+//     console.log("Failed to sync db: " + err.message);
+//   });
+
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log("Drop and re-sync db.");
+// });

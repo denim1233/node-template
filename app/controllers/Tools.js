@@ -1,5 +1,6 @@
+require("dotenv").config();
+const winston = require("winston");
 var nodemailer = require("nodemailer");
-
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -15,6 +16,49 @@ var transporter = nodemailer.createTransport({
 //     subject: 'Sending Email using Node.js',
 //     text: 'That was easy!'
 //   }
+
+const options = {
+  file: {
+    level: "info",
+    filename: "./storage/logs/app.log",
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+    colorize: false,
+  },
+  console: {
+    level: "debug",
+    handleExceptions: true,
+    json: false,
+    colorize: true,
+  },
+};
+
+exports.logger = winston.createLogger({
+  levels: winston.config.npm.levels,
+  transports: [
+    new winston.transports.File(options.file),
+    new winston.transports.Console(options.console),
+  ],
+  exitOnError: false,
+});
+
+const jwt = require("jsonwebtoken");
+//create jwt token
+exports.createToken = async (req, res) => {
+  console.log(req.headers);
+  const token = jwt.sign(
+    { user_id: 2, email: "testmail@mail.com" },
+    process.env.TOKEN_KEY,
+    {
+      expiresIn: "2h",
+    }
+  );
+  // res.status(201).json(token);
+
+  res.send({ status: "success", token: token });
+};
 
 var mailOptions = {
   from: "lalibasser@gmail.com",
@@ -99,5 +143,3 @@ exports.login = async (req, res) => {
     res.json({ msg: "Server Error! Please reload page" });
   }
 };
-
-exports.createLog = async = () => {};

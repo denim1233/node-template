@@ -1,17 +1,7 @@
 const UserModel = require("../model/user");
 const StatusModel = require("../model/status");
 const UserTypeModel = require("../model/userType");
-
-//inner join
-// var statusSchema = mongoose.Schema({
-//   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-//   addTime: Date,
-// });
-
-// var userTypeSchema = mongoose.Schema({
-//   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-//   addTime: Date,
-// });
+// load env settings and add into process.env
 
 // Create and Save a new user
 exports.register = async (req, res) => {
@@ -220,3 +210,15 @@ exports.destroy = async (req, res) => {
       });
     });
 };
+
+// notes
+//inner join
+// var statusSchema = mongoose.Schema({
+//   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+//   addTime: Date,
+// });
+
+// var userTypeSchema = mongoose.Schema({
+//   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+//   addTime: Date,
+// });
