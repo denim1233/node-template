@@ -35,6 +35,33 @@ const options = {
   },
 };
 
+exports.createCookie = async (req, res) => {
+  const cookieConfig = {
+    httpOnly: true, // to disable accessing cookie via client side js
+    //secure: true, // to force https (if you use it)
+    maxAge: 1000000, // ttl in seconds (remove this option and cookie will die when browser is closed)
+    signed: true, // if you use the secret with cookieParser
+  };
+
+  res.cookie("test3", "test cookie hidden", cookieConfig);
+  res.send("set cookie");
+};
+
+exports.getCookie = async (req, res) => {
+  const signedCookies = req.signedCookies; // get signed cookies
+  console.log("signed-cookies:", signedCookies);
+  const cookies = req.cookies["test3"]; // get not signed cookies
+  console.log("not-signed-cookies:", cookies);
+
+  // or access directly to one cookie by its name :
+  const myTestCookie = req.signedCookies;
+  console.log("our test signed cookie:", myTestCookie);
+  res.send("get cookie");
+};
+
+// how to use?
+// logger.info()
+// logger.error()
 exports.logger = winston.createLogger({
   levels: winston.config.npm.levels,
   transports: [
